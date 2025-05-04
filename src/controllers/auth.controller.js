@@ -1,6 +1,6 @@
 // src/controllers/auth.controller.js
-import AuthService from "../services/auth.service.js"; // Đảm bảo đường dẫn đúng
-import { handleSuccessResponse } from "../helpers/handleResponse.js"; // Đảm bảo đường dẫn đúng
+import AuthService from "../services/auth.service.js"; 
+import { handleSuccessResponse } from "../helpers/handleResponse.js"; 
 
 class AuthController {
   /**

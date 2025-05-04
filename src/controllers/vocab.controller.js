@@ -1,6 +1,6 @@
 // src/controllers/auth.controller.js
-import VocabService from "../services/vocab.service.js"; // Đảm bảo đường dẫn đúng
-import { handleErrorResponse ,handleSuccessResponse } from "../helpers/handleResponse.js"; // Đảm bảo đường dẫn đúng
+import VocabService from "../services/vocab.service.js"; 
+import { handleErrorResponse ,handleSuccessResponse } from "../helpers/handleResponse.js"; 
 
 class VocabController {
   /**
@@ -86,26 +86,23 @@ class VocabController {
    */
   async show(req, res, next) {
     try {
-      // Read UID from query parameters for a GET request
       const ID = parseInt(req.query.U_ID, 10);
 
-      const showData = { UID: ID }; // <--- Corrected line
+      const showData = { UID: ID }; 
 
-      // Check if U_ID was provided
       if (!showData.UID) {
-         // You might want to throw a BadRequestError here or handle it appropriately
          return res.status(400).json(handleErrorResponse("Missing U_ID query parameter", 400));
       }
 
       // Call service with the correct data structure
-      const vocabListResult = await VocabService.show(showData); // Pass { UID: ... }
+      const vocabListResult = await VocabService.show(showData); 
 
       // Trả về phản hồi thành công
       res.status(200).json(
         handleSuccessResponse(
           "Truy xuất thành công",
           200,
-          vocabListResult // Pass the result from the service
+          vocabListResult 
         )
       );
     } catch (error) {

@@ -1,22 +1,17 @@
 // src/services/auth.service.js
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import prisma from "../common/prisma/prisma.init.js"; // Đảm bảo đường dẫn đúng
-import { BadRequestError, UnAuthorizedError } from "../helpers/handleError.js"; // Đảm bảo đường dẫn đúng
+import prisma from "../common/prisma/prisma.init.js"; 
+import { BadRequestError, UnAuthorizedError } from "../helpers/handleError.js"; 
 
-const saltRounds = 10; // Số vòng băm, nên đặt trong biến môi trường
+const saltRounds = 10; 
 
-// Lấy JWT secret và thời gian hết hạn từ biến môi trường
-// !!! QUAN TRỌNG: Đảm bảo các biến này được định nghĩa trong file .env của bạn !!!
-const JWT_SECRET = process.env.JWT_SECRET || "your-default-super-secret-key"; // Cần thay thế bằng secret mạnh và an toàn
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h"; // Ví dụ: 1 giờ
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-default-super-secret-key"; 
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h"; 
 
 class AuthService {
-  /**
-   * Đăng ký tài khoản mới.
-   * Sử dụng tên trường đã map trong Prisma schema (username, passwordHash).
-   * Nhận đầu vào là username và password.
-   */
+  
   async register(data) {
     // Đổi tên tham số đầu vào cho nhất quán
     const { username, password } = data;
@@ -25,15 +20,12 @@ class AuthService {
     if (!username || !password) {
       throw new BadRequestError("Thiếu thông tin bắt buộc: username, password");
     }
-    // Nên thêm validation phức tạp hơn cho password ở đây
+
     if (password.length < 6) {
       throw new BadRequestError("Mật khẩu phải có ít nhất 6 ký tự.");
     }
-    // Nên thêm validation cho username (ví dụ: ký tự, độ dài)
 
-    // Kiểm tra tài khoản đã tồn tại chưa, sử dụng tên trường đã map 'username'
     const existingUser = await prisma.uSERINFO.findFirst({
-      // Sử dụng findUnique vì username đã được đánh dấu @unique trong schema
       where: { USERNAME: username },
     });
     if (existingUser) {
@@ -43,17 +35,14 @@ class AuthService {
     // Hash mật khẩu
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Tạo user mới, sử dụng tên trường đã map 'username' và 'passwordHash'
     const newUser = await prisma.uSERINFO.create({
       data: {
-        USERNAME: username, // Map tới cột USERNAME
-        PWord: hashedPassword, // Map tới cột PWord
-        // Nếu có thêm các trường khác (như email, firstName,... đã map), thêm vào đây
+        USERNAME: username, 
+        PWord: hashedPassword, 
       },
-      // Chọn các trường trả về, sử dụng tên đã map
       select: {
-        U_ID: true, // Map từ cột U_ID
-        USERNAME: true, // Map từ cột USERNAME
+        U_ID: true, 
+        USERNAME: true,
       },
     });
 
@@ -64,31 +53,23 @@ class AuthService {
     };
   }
 
-  /**
-   * Đăng nhập tài khoản.
-   * Sử dụng tên trường đã map trong Prisma schema (username, passwordHash).
-   * Nhận đầu vào là username và password.
-   */
+  
   async login(data) {
-    // Đổi tên tham số đầu vào cho nhất quán
     const { username, password } = data;
 
     if (!username || !password) {
       throw new BadRequestError("Vui lòng nhập đầy đủ tài khoản và mật khẩu.");
     }
 
-    // Tìm user theo tài khoản, sử dụng tên trường đã map 'username'
     const user = await prisma.uSERINFO.findFirst({
       where: { USERNAME: username },
     });
 
     if (!user) {
-      // Không tìm thấy user với username này
       throw new UnAuthorizedError("Tài khoản hoặc mật khẩu không đúng.");
     }
 
-    // So sánh mật khẩu nhập vào với mật khẩu đã hash trong DB (sử dụng passwordHash đã map)
-    const isMatch = await bcrypt.compare(password, user.PWord); // user.passwordHash map từ cột PWord
+    const isMatch = await bcrypt.compare(password, user.PWord); 
     if (!isMatch) {
       // Mật khẩu không khớp
       throw new UnAuthorizedError("Tài khoản hoặc mật khẩu không đúng.");
@@ -112,12 +93,10 @@ class AuthService {
       userInfo: {
         U_ID: user.U_ID,
         USERNAME: user.USERNAME,
-        // Thêm các thông tin khác nếu cần (ví dụ: email, tên)
       },
     };
   }
 
-  // Có thể thêm các phương thức khác như logout, refreshToken,... ở đây
 }
 
 export default new AuthService();
