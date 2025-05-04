@@ -22,9 +22,14 @@ const options = {
         name: "Auth",
         description: "Các API liên quan tới đăng ký / đăng nhập",
       },
+      {
+        name: "Vocabulary",
+        description: "Kho từ vựng cá nhân hóa"
+      }
     ],
   },
-  apis: ["./src/controllers/auth.controller.js", "./src/routers/auth.router.js"], // nơi chứa comment @swagger
+  apis: ["./src/controllers/auth.controller.js", "./src/routers/auth.router.js", "./src/controllers/vocab.controller.js"], // nơi chứa comment @swagger
+
 };
 
 const swaggerSpec = swaggerJSDoc(options);

@@ -8,13 +8,20 @@ datasource db {
 }
 
 model USERINFO {
-  id           Int    @id(map: "PK_NGUOIDUNG") @default(autoincrement()) @map("U_ID")
-  username     String @map("USERNAME") @db.VarChar(255)
-  passwordHash String @map("PWord") @db.VarChar(255)
+  U_ID     Int     @id(map: "PK_NGUOIDUNG") @default(autoincrement()) @map("U_ID")
+  USERNAME String  @map("USERNAME") @db.VarChar(255)
+  PWord    String  @map("PWord") @db.VarChar(255)
+  VOCAB    VOCAB[]
+
+  @@map("USERINFO")
 }
 
-model vocab{
-  id
-  word
-  meaning
+model VOCAB {
+  U_ID     Int      @map("U_ID")
+  WORD     String   @map("WORD") @db.VarChar(255)
+  MEANINGS String   @map("MEANINGS") @db.VarChar(1028)
+  USERINFO USERINFO @relation(fields: [U_ID], references: [U_ID], onUpdate: NoAction, map: "FK_UID")
+
+  @@id([U_ID, WORD], map: "PK_VOCAB")
+  @@map("VOCAB")
 }

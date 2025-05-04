@@ -7,7 +7,7 @@ export class BadRequestError extends Error {
   constructor(message = 'Bad Request') { // Sửa message mặc định
     super(message);
     this.code = 400;
-    this.name = 'BadRequestError'; // Thêm name để dễ nhận biết
+    this.name = 'Dữ Liệu Đã Tồn Tại'; // Thêm name để dễ nhận biết
   }
 }
 

@@ -21,12 +21,12 @@ class AuthController {
    *             properties:               
    *               username:
    *                 type: string
-   *                 example: "taikhoan123"
+   *                 example: "luquocphap123"
    *                 description: Tên tài khoản
    *               password:
    *                 type: string
    *                 format: password
-   *                 example: "Demo@123"
+   *                 example: "123456"
    *                 description: Mật khẩu
    *     responses:
    *       200:
@@ -76,12 +76,12 @@ class AuthController {
    *             properties:
    *               username:
    *                 type: string
-   *                 example: "taikhoan1234"
+   *                 example: "luquocphap123"
    *                 description: Email hoặc tài khoản đăng nhập
    *               password:
    *                 type: string
    *                 format: password
-   *                 example: "Demo@123"
+   *                 example: "123456"
    *                 description: Mật khẩu
    *     responses:
    *       200:

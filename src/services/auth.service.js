@@ -34,7 +34,7 @@ class AuthService {
     // Kiểm tra tài khoản đã tồn tại chưa, sử dụng tên trường đã map 'username'
     const existingUser = await prisma.uSERINFO.findFirst({
       // Sử dụng findUnique vì username đã được đánh dấu @unique trong schema
-      where: { username: username },
+      where: { USERNAME: username },
     });
     if (existingUser) {
       throw new BadRequestError(`Tài khoản "${username}" đã tồn tại!`);
@@ -46,21 +46,21 @@ class AuthService {
     // Tạo user mới, sử dụng tên trường đã map 'username' và 'passwordHash'
     const newUser = await prisma.uSERINFO.create({
       data: {
-        username: username, // Map tới cột USERNAME
-        passwordHash: hashedPassword, // Map tới cột PWord
+        USERNAME: username, // Map tới cột USERNAME
+        PWord: hashedPassword, // Map tới cột PWord
         // Nếu có thêm các trường khác (như email, firstName,... đã map), thêm vào đây
       },
       // Chọn các trường trả về, sử dụng tên đã map
       select: {
-        id: true, // Map từ cột U_ID
-        username: true, // Map từ cột USERNAME
+        U_ID: true, // Map từ cột U_ID
+        USERNAME: true, // Map từ cột USERNAME
       },
     });
 
     // Trả về thông tin người dùng mới với tên đã map
     return {
-      userId: newUser.id,
-      username: newUser.username,
+      userId: newUser.U_ID,
+      username: newUser.USERNAME,
     };
   }
 
@@ -79,7 +79,7 @@ class AuthService {
 
     // Tìm user theo tài khoản, sử dụng tên trường đã map 'username'
     const user = await prisma.uSERINFO.findFirst({
-      where: { username: username },
+      where: { USERNAME: username },
     });
 
     if (!user) {
@@ -88,7 +88,7 @@ class AuthService {
     }
 
     // So sánh mật khẩu nhập vào với mật khẩu đã hash trong DB (sử dụng passwordHash đã map)
-    const isMatch = await bcrypt.compare(password, user.passwordHash); // user.passwordHash map từ cột PWord
+    const isMatch = await bcrypt.compare(password, user.PWord); // user.passwordHash map từ cột PWord
     if (!isMatch) {
       // Mật khẩu không khớp
       throw new UnAuthorizedError("Tài khoản hoặc mật khẩu không đúng.");
@@ -96,10 +96,9 @@ class AuthService {
 
     // Tạo JWT Payload, sử dụng tên trường đã map
     const payload = {
-      userId: user.id, // Map từ cột U_ID
-      username: user.username, // Map từ cột USERNAME
-      // Nên thêm vai trò (role) nếu có hệ thống phân quyền
-      // role: user.role // Ví dụ nếu có trường role
+      U_ID: user.U_ID, // Map từ cột U_ID
+      USERNAME: user.USERNAME, // Map từ cột USERNAME
+      
     };
 
     // Tạo token
@@ -111,8 +110,8 @@ class AuthService {
     return {
       token,
       userInfo: {
-        userId: user.id,
-        username: user.username,
+        U_ID: user.U_ID,
+        USERNAME: user.USERNAME,
         // Thêm các thông tin khác nếu cần (ví dụ: email, tên)
       },
     };
